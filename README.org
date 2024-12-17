@@ -1,0 +1,39 @@
+#+title: ACT-IV - Actively Controlled Transfer with Integrated Versioning - Project Proposal
+
+* The Purpose
+*ACT-IV* is an open source solution to the file synchronization problem
+
+File synchronization tools are often cluttered and overcomplicated for what they do
+
+
+*ACT-IV* aims to fix this problem by allowing users to simply and efficiently sync directories across systems using git
+
+* Usage
+To set up *ACT-IV* simply create a private git repository and specify it in an *ACT-X.toml* file at *$HOME/.config/ACT-IV* where *X* can be any string to represent different repos and different synchronization jobs these are called *ACT-ROUTINES*
+
+* Features
+You can manually push a directory to it's respective repo with ~ACT-THROW~
+
+The ~ACT-CLOCK~ daemon will keep track of time and automatically push your files as specified in your *ACT-ROUTINES*
+
+For example you might have *ACT-NOTES.toml* configured to sync daily and *ACT-CODE.toml* configured to sync hourly
+
+If your device is off when the time you specified passes, ~ACT-CLOCK~ will ~THROW~ your files to the repo the next time it is initiated
+
+
+You can also specify a password to encrypt your files or specify compression options to compress larger directories
+
+
+To retrieve your files from the target system use the ~ACT-CATCH~ command to pull from a *ACT-IV* repo, include your password to decrypt files if you chose to encrypt them
+
+
+Alternatively you can use the *ACT-CATCH.toml* routine to specify which repos go to which directories and passwords for them so you can *CATCH* all of your files with one command
+
+
+*ACT-ROUTINES* also include the option of setting an ntfy.sh topic to recieve notifications when a sync successfully completes or fails
+
+
+If something catastrophic happens and your files are ruined you can use ~ACT-WIND~ to rewind time back to an old commit and get your files back
+
+
+The *ACT-SUITE* will be available on the AUR from aur/act-suite
