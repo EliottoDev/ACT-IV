@@ -1,6 +1,21 @@
 [package]
-name = "ACT-IV"
+name = "Active"
 version = "0.1.0"
 edition = "2021"
+description = "Active is an open source solution to the file synchronization problem."
+readme = "README.org"
+license = "Apache-2.0"
+license-file = "LICENSE"
+repository = "https://gitlab.com/dynami/Active"
+homepage = "https://active.dynami.com/"
+authors = [
+    "EliottoDev",
+    "przock"
+]
 
 [dependencies]
+clap = { version = "4.5.23", features = ["derive"] }
+
+[[bin]]
+name = "act"
+path = "src/main.rs"
