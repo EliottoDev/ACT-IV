@@ -1,0 +1,14 @@
+max_width = 100
+tab_spaces = 4
+use_small_heuristics = "Max"
+newline_style = "Unix"
+reorder_imports = true
+wrap_comments = true
+match_block_trailing_comma = true
+fn_single_line = false
+where_single_line = false
+force_multiline_blocks = true
+trailing_comma = "Always"
+format_strings = true
+blank_lines_upper_bound = 2
+blank_lines_lower_bound = 1

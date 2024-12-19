@@ -15,7 +15,6 @@ enum Commands {
     // TODO: Add subcommands
     #[clap(about = "Gets project act file info", long_about = None, name = "info")]
     Info,
-
 }
 
 fn main() {
@@ -23,7 +22,7 @@ fn main() {
 
     // TODO: Implement logic
     match &args.command {
-        None => {}
-        _ => {}
+        None => {},
+        _ => {},
     }
 }
