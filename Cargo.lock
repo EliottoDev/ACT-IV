@@ -6,7 +6,7 @@ version = 3
 name = "Active"
 version = "0.1.0"
 dependencies = [
-    "clap",
+ "clap",
 ]
 
 [[package]]
@@ -15,13 +15,13 @@ version = "0.6.18"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "8acc5369981196006228e28809f761875c0327210a891e941f4c683b3a99529b"
 dependencies = [
-    "anstyle",
-    "anstyle-parse",
-    "anstyle-query",
-    "anstyle-wincon",
-    "colorchoice",
-    "is_terminal_polyfill",
-    "utf8parse",
+ "anstyle",
+ "anstyle-parse",
+ "anstyle-query",
+ "anstyle-wincon",
+ "colorchoice",
+ "is_terminal_polyfill",
+ "utf8parse",
 ]
 
 [[package]]
@@ -36,7 +36,7 @@ version = "0.2.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "3b2d16507662817a6a20a9ea92df6652ee4f94f914589377d69f3b21bc5798a9"
 dependencies = [
-    "utf8parse",
+ "utf8parse",
 ]
 
 [[package]]
@@ -45,7 +45,7 @@ version = "1.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "79947af37f4177cfead1110013d678905c37501914fba0efea834c3fe9a8d60c"
 dependencies = [
-    "windows-sys",
+ "windows-sys",
 ]
 
 [[package]]
@@ -54,8 +54,8 @@ version = "3.0.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "2109dbce0e72be3ec00bed26e6a7479ca384ad226efdd66db8fa2e3a38c83125"
 dependencies = [
-    "anstyle",
-    "windows-sys",
+ "anstyle",
+ "windows-sys",
 ]
 
 [[package]]
@@ -64,8 +64,8 @@ version = "4.5.23"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "3135e7ec2ef7b10c6ed8950f0f792ed96ee093fa088608f1c76e569722700c84"
 dependencies = [
-    "clap_builder",
-    "clap_derive",
+ "clap_builder",
+ "clap_derive",
 ]
 
 [[package]]
@@ -74,10 +74,10 @@ version = "4.5.23"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "30582fc632330df2bd26877bde0c1f4470d57c582bbc070376afcd04d8cb4838"
 dependencies = [
-    "anstream",
-    "anstyle",
-    "clap_lex",
-    "strsim",
+ "anstream",
+ "anstyle",
+ "clap_lex",
+ "strsim",
 ]
 
 [[package]]
@@ -86,10 +86,10 @@ version = "4.5.18"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "4ac6a0c7b1a9e9a5186361f67dfa1b88213572f427fb9ab038efb2bd8c582dab"
 dependencies = [
-    "heck",
-    "proc-macro2",
-    "quote",
-    "syn",
+ "heck",
+ "proc-macro2",
+ "quote",
+ "syn",
 ]
 
 [[package]]
@@ -122,7 +122,7 @@ version = "1.0.92"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "37d3544b3f2748c54e147655edb5025752e2303145b5aefb3c3ea2c78b973bb0"
 dependencies = [
-    "unicode-ident",
+ "unicode-ident",
 ]
 
 [[package]]
@@ -131,7 +131,7 @@ version = "1.0.37"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b5b9d34b8991d19d98081b46eacdd8eb58c6f2b201139f7c5f643cc155a633af"
 dependencies = [
-    "proc-macro2",
+ "proc-macro2",
 ]
 
 [[package]]
@@ -146,9 +146,9 @@ version = "2.0.90"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "919d3b74a5dd0ccd15aeb8f93e7006bd9e14c295087c9896a110f490752bcf31"
 dependencies = [
-    "proc-macro2",
-    "quote",
-    "unicode-ident",
+ "proc-macro2",
+ "quote",
+ "unicode-ident",
 ]
 
 [[package]]
@@ -169,7 +169,7 @@ version = "0.59.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1e38bc4d79ed67fd075bcc251a1c39b32a1776bbe92e5bef1f0bf1f8c531853b"
 dependencies = [
-    "windows-targets",
+ "windows-targets",
 ]
 
 [[package]]
@@ -178,14 +178,14 @@ version = "0.52.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9b724f72796e036ab90c1021d4780d4d3d648aca59e491e6b98e725b84e99973"
 dependencies = [
-    "windows_aarch64_gnullvm",
-    "windows_aarch64_msvc",
-    "windows_i686_gnu",
-    "windows_i686_gnullvm",
-    "windows_i686_msvc",
-    "windows_x86_64_gnu",
-    "windows_x86_64_gnullvm",
-    "windows_x86_64_msvc",
+ "windows_aarch64_gnullvm",
+ "windows_aarch64_msvc",
+ "windows_i686_gnu",
+ "windows_i686_gnullvm",
+ "windows_i686_msvc",
+ "windows_x86_64_gnu",
+ "windows_x86_64_gnullvm",
+ "windows_x86_64_msvc",
 ]
 
 [[package]]
