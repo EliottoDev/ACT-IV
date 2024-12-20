@@ -1,0 +1,32 @@
+[base]
+path = "/path/to/notes"
+
+[base.interval]
+commit_interval = "1d"                  # sync every day
+sync_method = "thorough"                # or "delta" for incremental
+
+timestamp = true                        # whether or not to timestamp syncing
+time_zone = "UTC"                       # set time zone for sync scheduling, optional
+# last_sync_time = "2024-12-15T14:30:00Z"  timestamp of the last sync, optional
+
+[crypt]
+encrypt = true                          # enable encryption
+password = "secretpassword"             # optional plain text password
+password_eval = "/path/to/command"      # more secure: evaluate a command to retrieve the password
+
+[press]
+compression = "gz"                      # or "xz", or "bz2", or "lzma2", a command, or "nil"
+
+[advanced]
+exclude = ["*.tmp", "cache/", "logs/"]  # exclude specific files and directories
+sync_on_startup = true                  # sync as soon as the daemon starts
+
+[ntfy]
+ntfy_topic = "sync-updates"             # send notifications to a specific topic
+notification_on_success = true          # notify when sync is successful
+notification_on_failure = true          # notify when sync fails
+
+[git]
+remote = "https://github.com/exam/ple"  # a remote for the repo
+branch = "main"                         # push and pull from the main branch
+force_push = false                      # do not force push by default
