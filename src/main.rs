@@ -7,8 +7,8 @@ fn main() {
     use cli::Commands;
 
     match &args.command {
-        Commands::Info(path) => cli::info(path),
-        Commands::Throw => cli::throw(),
+        Commands::Info { routine } => cli::info(routine),
+        Commands::Throw {} => cli::throw(),
         Commands::Catch => cli::catch(),
         Commands::Wind => cli::wind()
     }

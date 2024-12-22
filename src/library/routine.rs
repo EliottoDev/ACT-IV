@@ -15,6 +15,7 @@ pub struct Routine {
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct Base {
+    pub title: String,
     pub path: String,
     pub interval: BaseInterval,
 }
@@ -60,17 +61,18 @@ pub struct Git {
     pub force_push: bool,  // whether to force push
 }
 
-pub fn read_routine(file_name: String) -> Result<Routine, Error> {
-    let config_str = fs::read_to_string(file_name);
+pub fn read_routine(file_name: &String) -> Result<Routine, Error> {
+    let routine_str = fs::read_to_string(file_name);
 
-    if let Err(error) = config_str {
+    if let Err(error) = routine_str {
         panic!("Error reading config file {}\nKind -> {}\nMessage: {}", file_name, error.kind(), error);
     }
 
-    let routine: Routine = toml::from_str(&config_str).unwrap();
-
-
-    println!("{:#?}", routine);
+    let routine: Routine = toml::from_str(&routine_str.unwrap()).unwrap();
 
     Ok(routine)
+}
+
+pub fn print_routine(file_name: &String) {
+    println!("{:?}", read_routine(&file_name).unwrap());
 }

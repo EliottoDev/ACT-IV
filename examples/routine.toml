@@ -1,4 +1,5 @@
 [base]
+title = "Notes"
 path = "/path/to/notes"
 
 [base.interval]

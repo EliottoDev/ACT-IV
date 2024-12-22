@@ -1,6 +1,7 @@
 use std::env::current_dir;
 use std::path::Path;
 use clap::{Parser, Subcommand};
+use crate::library;
 
 #[derive(Parser, Debug)]
 #[clap(version, about, long_about = None)]
@@ -12,24 +13,25 @@ pub(crate) struct Args {
 #[derive(Subcommand, Debug)]
 pub(crate) enum Commands {
     #[clap(about = "Gets ", long_about = None, name = "info")]
-    Info(String),
+    Info { routine:String },
     #[clap(about = "", long_about = None, name = "throw")]
-    Throw,
+    Throw {},
     #[clap(about = "", long_about = None, name = "catch")]
     Catch,
     #[clap(about = "", long_about = None, name = "wind")]
     Wind,
 }
 
-pub(crate) fn info(routine: &String) {
+pub(crate) fn info(routine_path: &String) {
     let mut relative_path = current_dir().unwrap();
-    let absolute_path = Path::new(&routine);
+    let absolute_path = Path::new(&routine_path);
     if absolute_path.exists() && absolute_path.is_file() {
-        println!("{} exists", routine);
+	let routine_toml = library::routine::read_routine(routine_path).unwrap(); //routine is a &String already
+	println!("Routine {} exists", routine_toml.base.title); //print the title of the routine
         return;
     }
 
-    for directory in routine.split("/") {
+    for directory in routine_path.split("/") {
         if directory == "." { continue; }
         if directory == ".." {
             relative_path.pop();
@@ -39,7 +41,8 @@ pub(crate) fn info(routine: &String) {
     }
 
     if relative_path.exists() && relative_path.is_file() {
-        println!("{} exists", routine);
+	let routine_toml = library::routine::read_routine(routine_path).unwrap(); //routine is a &String already
+	println!("Routine {} exists", routine_toml.base.title); //print the title of the routine
         return;
     }
 
@@ -47,7 +50,6 @@ pub(crate) fn info(routine: &String) {
 }
 
 pub(crate) fn throw() {
-    todo!();
 }
 
 pub(crate) fn catch() {
