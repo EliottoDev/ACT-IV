@@ -4,7 +4,6 @@ version = "0.1.0"
 edition = "2021"
 description = "ACT-IV is an open source solution to the file synchronization problem."
 readme = "README.org"
-license = "Apache-2.0"
 license-file = "LICENSE"
 repository = "https://gitlab.com/dynami/Active"
 homepage = "https://active.dynami.com/"
@@ -14,9 +13,13 @@ authors = [
 ]
 
 [dependencies]
+chrono = "0.4.39"
 clap = { version = "4.5.23", features = ["derive"] }
+git2 = "0.20.0"
 serde = { version = "1.0.216", features = ["derive", "std"] }
+tabled = "0.17.0"
 toml = "0.8.19"
+walkdir = "2.5.0"
 
 [[bin]]
 name = "act"

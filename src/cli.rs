@@ -1,4 +1,3 @@
-use std::env::current_dir;
 use std::path::Path;
 use clap::{Parser, Subcommand};
 use crate::library;
@@ -12,22 +11,26 @@ pub(crate) struct Args {
 
 #[derive(Subcommand, Debug)]
 pub(crate) enum Commands {
-    #[clap(about = "Gets ", long_about = None, name = "info")]
+    #[clap(about = "Print info about a routine", long_about = None, name = "info")]
     Info { routine:String },
-    #[clap(about = "", long_about = None, name = "throw")]
+    #[clap(about = "Prepare a routine's Git repository for throwing", long_about = None, name = "stage")]
+    Stage { routine:String, message:Option<String> },
+    #[clap(about = "Push a routine's Git repository to it's specified remote", long_about = None, name = "throw")]
     Throw {},
-    #[clap(about = "", long_about = None, name = "catch")]
+    #[clap(about = "Pull a routine's Git repository from it's specified remote", long_about = None, name = "catch")]
     Catch,
-    #[clap(about = "", long_about = None, name = "wind")]
+    #[clap(about = "Revert a routine's Git repository to a previous commit", long_about = None, name = "wind")]
     Wind,
 }
 
+//Print info about a routine
 pub(crate) fn info(routine_path: &String) {
-    let mut relative_path = current_dir().unwrap();
+    let mut relative_path = std::env::current_dir().unwrap();
     let absolute_path = Path::new(&routine_path);
+    
     if absolute_path.exists() && absolute_path.is_file() {
 	let routine_toml = library::routine::read_routine(routine_path).unwrap(); //routine is a &String already
-	println!("Routine {} exists", routine_toml.base.title); //print the title of the routine
+	library::routine::print_routine(&routine_toml);
         return;
     }
 
@@ -42,14 +45,25 @@ pub(crate) fn info(routine_path: &String) {
 
     if relative_path.exists() && relative_path.is_file() {
 	let routine_toml = library::routine::read_routine(routine_path).unwrap(); //routine is a &String already
-	println!("Routine {} exists", routine_toml.base.title); //print the title of the routine
+	library::routine::print_routine(&routine_toml);
         return;
     }
 
     println!("Routine not found");
 }
+//create the repo, commit changes, and stop there
+pub(crate) fn stage(routine_path: &String, message: &Option<String>) {
+    let routine_toml = library::routine::read_routine(routine_path).unwrap(); //stage_routine takes a &Routine, so we need to get that
+
+    if let Some(_m) = message {
+	library::routine::stage_routine(&routine_toml, message);
+    } else { 
+	library::routine::stage_routine(&routine_toml, &None);
+    }
+}
 
 pub(crate) fn throw() {
+    todo!()
 }
 
 pub(crate) fn catch() {

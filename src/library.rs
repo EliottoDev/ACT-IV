@@ -1,6 +1,6 @@
 #[path = "library/routine.rs"]
-pub mod routine;
+pub(crate) mod routine;
 
 #[path = "library/config.rs"]
-pub mod config;
+pub(crate) mod config;
 mod daemon;

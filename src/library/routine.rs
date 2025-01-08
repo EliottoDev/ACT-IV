@@ -1,6 +1,13 @@
-use std::fs;
-use std::io::Error;
+use std::{env::var, fs};
+use std::{io::Error, path::{Path, PathBuf}};
 use serde::{Deserialize, Serialize};
+use tabled::{
+    Table, Tabled,
+    settings::*
+};
+use git2::{Repository, IndexAddOption};
+use walkdir::WalkDir;
+use chrono::Local;
 use toml;
 
 #[derive(Debug, Deserialize, Serialize)]
@@ -65,7 +72,7 @@ pub fn read_routine(file_name: &String) -> Result<Routine, Error> {
     let routine_str = fs::read_to_string(file_name);
 
     if let Err(error) = routine_str {
-        panic!("Error reading config file {}\nKind -> {}\nMessage: {}", file_name, error.kind(), error);
+        panic!("Error reading config file {}\nKind -> {}\nMessage -> {}", file_name, error.kind(), error);
     }
 
     let routine: Routine = toml::from_str(&routine_str.unwrap()).unwrap();
@@ -73,6 +80,153 @@ pub fn read_routine(file_name: &String) -> Result<Routine, Error> {
     Ok(routine)
 }
 
-pub fn print_routine(file_name: &String) {
-    println!("{:?}", read_routine(&file_name).unwrap());
+pub fn print_routine(routine: &Routine) {
+	#[derive(Tabled)]
+	struct Data<'a> {
+	    name: &'a str,
+	    value: String,
+	}
+
+	let data = vec![
+            Data {
+		name: "Title",
+		value: routine.base.title.clone(),
+            },
+            Data {
+		name: "Path",
+		value: routine.base.path.clone(),
+            },
+            Data {
+		name: "Interval Timestamp",
+		value: routine.base.interval.timestamp.to_string(),
+            },
+            Data {
+		name: "Commit Interval",
+		value: routine.base.interval.commit_interval.clone(),
+            },
+            Data {
+		name: "Sync Method",
+		value: routine.base.interval.sync_method.clone(),
+            },
+            Data {
+		name: "Time Zone",
+		value: routine.base.interval.time_zone.clone(),
+            },
+            Data {
+		name: "Last Sync Time",
+		value: routine.base.interval.last_sync_time.clone().unwrap_or("None".to_string()),
+            },
+            Data {
+		name: "Encrypt",
+		value: routine.crypt.encrypt.to_string(),
+            },
+            Data {
+		name: "Password",
+		value: routine.crypt.password.clone().unwrap_or("None".to_string()),
+            },
+            Data {
+		name: "Password Eval",
+		value: routine.crypt.password_eval.clone().unwrap_or("None".to_string()),
+            },
+            Data {
+		name: "Compression",
+		value: routine.press.compression.clone(),
+            },
+            Data {
+		name: "Exclude",
+		value: format!("{:?}", routine.advanced.exclude),
+            },
+            Data {
+		name: "Sync On Startup",
+		value: routine.advanced.sync_on_startup.to_string(),
+            },
+            Data {
+		name: "Notify Topic",
+		value: routine.ntfy.ntfy_topic.clone(),
+            },
+            Data {
+		name: "Notification on Success",
+		value: routine.ntfy.notification_on_success.to_string(),
+            },
+            Data {
+		name: "Notification on Failure",
+		value: routine.ntfy.notification_on_failure.to_string(),
+            },
+            Data {
+		name: "Git Remote",
+		value: routine.git.remote.clone(),
+            },
+            Data {
+		name: "Git Branch",
+		value: routine.git.branch.clone(),
+            },
+            Data {
+		name: "Force Push",
+		value: routine.git.force_push.to_string(),
+            },
+	];
+
+	let table_config = Settings::default()
+	    .with(Style::rounded());
+
+	let table = Table::new(data)
+	    .with(table_config)
+	    .to_string();
+
+	println!("{}", table);
+}
+
+fn walk_directory(path: &str) -> Vec<PathBuf> { //this is used in stage_routine
+    let mut paths = Vec::new();
+
+    for entry in WalkDir::new(path).into_iter().filter_map(Result::ok) {
+	let entry_path = entry.path();
+	let git_pattern = format!("{}.git", path);
+	if entry_path != std::path::Path::new(path) {
+	    if entry_path.starts_with(git_pattern) { continue; }
+	    paths.push(entry_path.to_path_buf());
+	}
+    }
+    paths
+}
+
+pub fn stage_routine(routine: &Routine, message: &Option<String>) {
+    let msg:String;
+
+    //optional commit message
+    match message {
+	Some(m) => { msg = m.to_string(); },
+	//TODO for now just have the default commit, change later to be optional
+	None => { msg = chrono::Local::now().format("%Y-%m-%d %H:%M:%S").to_string(); }
+    }
+
+    println!("{}", msg);
+
+    let path = &routine.base.path;
+    let new_repo = git2::Repository::init(path).unwrap();
+    let mut repo_index = new_repo.index().unwrap();
+
+    let file_paths = walk_directory(path);
+    let mut file_paths_string = String::new();
+    //the reason we do this is so that later we can add an ignore files feature to the routine itself
+    for file in file_paths {
+	if let Some(file_str) = file.to_str() {
+	    let file_str_stripped = file_str.strip_prefix(path).expect("File path doesn't start with base path");
+            file_paths_string.push_str(file_str_stripped);
+	    file_paths_string.push(' ');
+        } else {
+            eprintln!("Invalid UTF-8 path: {:?}", file);
+        }
+    }
+
+    if let Err(e) = repo_index.add_all([file_paths_string].iter(), IndexAddOption::DEFAULT, None) {
+        eprintln!("Failed to add files to index: {}", e);
+    }
+
+    if let Err(e) = repo_index.write() {
+        eprintln!("Failed to write to index: {}", e);
+    }
+
+    todo!("Implement commits in stage_routine()")
+    // new_repo.commit(update_ref, author, committer, message, tree, parents)
 }
