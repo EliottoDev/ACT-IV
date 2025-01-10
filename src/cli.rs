@@ -29,6 +29,10 @@ pub(crate) enum Commands {
         message: Option<String>,
     },
 
+    /// Sync the routine library and routine folder
+    #[clap(about = "Sync the routine library with the routine folder", long_about = None, name = "sync")]
+    Sync,
+
     /// Pushes a routine's Git repository to the specified remote.
     #[clap(about = "Push a routine's Git repository to its remote.", long_about = None, name = "throw")]
     Throw {},

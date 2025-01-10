@@ -65,7 +65,7 @@ pub struct Git {
 }
 
 /// Walks through the directory and returns a list of paths, excluding `.git` directories
-fn walk_directory(path: &str) -> Vec<PathBuf> {
+pub(crate) fn walk_directory(path: &str) -> Vec<PathBuf> {
     WalkDir::new(path)
         .into_iter()
         .filter_map(Result::ok) // Filter out errors
@@ -113,8 +113,17 @@ impl Routine {
 
         // Initialize the Git repository
         let path = &self.base.path;
-        let new_repo = Repository::init(path)?;
-        let mut repo_index = new_repo.index()?;
+
+	//Check if the repository exists, if not, create a new one
+        let repo = match Repository::open(path) {
+            Ok(repo) => repo,
+            Err(_) => {
+		println!("No repository exists, initializing.");
+		Repository::init(path).expect("Failed to create repository")
+            },
+        };
+	
+        let mut repo_index = repo.index()?;
 
         // Get all file paths in the directory (excluding .git directories)
         let file_paths = walk_directory(path);
@@ -130,16 +139,17 @@ impl Routine {
         repo_index.write()?; // Write the changes to the index
 
         // Create a commit author signature
+	/*TODO allow the user to change this*/
         let committer = Signature::now("test", "test@example.com")?;
         let tree_oid = repo_index.write_tree()?; // Write the index as a tree
-        let tree = new_repo.find_tree(tree_oid)?;
+        let tree = repo.find_tree(tree_oid)?;
 
         // If there is no HEAD, initialize the repository with the first commit
-        let head_real = match new_repo.head() {
+        let head_real = match repo.head() {
             Ok(head) => head,
             Err(_) => {
-                init_repo(&new_repo, &committer, &tree)?; // Initialize the repo if no HEAD exists
-                new_repo.head()?
+                init_repo(&repo, &committer, &tree)?; // Initialize the repo if no HEAD exists
+                repo.head()?
             },
         };
 
@@ -147,7 +157,7 @@ impl Routine {
         let parent_commit = head_real.peel_to_commit()?;
 
         // Create a new commit with the changes
-        let commit_oid = new_repo.commit(
+        let commit_oid = repo.commit(
             Some("HEAD"),
             &committer,
             &committer,
@@ -208,6 +218,7 @@ impl Routine {
         ];
 
         // Configure the table styling and display it
+	/*TODO Option to disable the pretty table printing*/
         let table = Table::new(data)
             .with(Settings::default().with(Style::rounded())) // Apply rounded style
             .to_string();

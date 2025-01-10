@@ -1,6 +1,6 @@
 use clap::Parser;
 use cli::{Args, Commands};
-use commands::{catch, info, stage, throw, wind};
+use commands::{catch, info, stage, sync, throw, wind};
 
 mod cli;
 mod commands;
@@ -15,6 +15,7 @@ fn main() {
     match &args.command {
         Commands::Info { routine } => info::info(routine),
         Commands::Stage { routine, message } => stage::stage(routine, message),
+        Commands::Sync => sync::sync(),
         Commands::Throw {} => throw::throw(),
         Commands::Catch => catch::catch(),
         Commands::Wind => wind::wind(),
