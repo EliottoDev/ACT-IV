@@ -1,75 +1,43 @@
-use std::path::Path;
 use clap::{Parser, Subcommand};
-use crate::library;
 
+/// Represents the command-line arguments structure.
 #[derive(Parser, Debug)]
 #[clap(version, about, long_about = None)]
 pub(crate) struct Args {
+    /// Subcommand to execute based on the user input.
     #[clap(subcommand)]
     pub(crate) command: Commands,
 }
 
+/// Enum representing the available commands in the CLI.
 #[derive(Subcommand, Debug)]
 pub(crate) enum Commands {
-    #[clap(about = "Print info about a routine", long_about = None, name = "info")]
-    Info { routine:String },
-    #[clap(about = "Prepare a routine's Git repository for throwing", long_about = None, name = "stage")]
-    Stage { routine:String, message:Option<String> },
-    #[clap(about = "Push a routine's Git repository to it's specified remote", long_about = None, name = "throw")]
+    /// Prints detailed information about a routine.
+    #[clap(about = "Display information about a routine.", long_about = None, name = "info")]
+    Info {
+        /// The path to the routine to retrieve information from.
+        routine: String,
+    },
+
+    /// Prepares a routine's Git repository for further actions (e.g., pushing).
+    #[clap(about = "Prepare a routine's Git repository for subsequent actions.", long_about = None, name = "stage")]
+    Stage {
+        /// Path to the routine repository to be staged.
+        routine: String,
+
+        /// Optional commit message; if none is provided, current timestamp is used.
+        message: Option<String>,
+    },
+
+    /// Pushes a routine's Git repository to the specified remote.
+    #[clap(about = "Push a routine's Git repository to its remote.", long_about = None, name = "throw")]
     Throw {},
-    #[clap(about = "Pull a routine's Git repository from it's specified remote", long_about = None, name = "catch")]
+
+    /// Pulls a routine's Git repository from the specified remote.
+    #[clap(about = "Pull a routine's Git repository from its remote.", long_about = None, name = "catch")]
     Catch,
-    #[clap(about = "Revert a routine's Git repository to a previous commit", long_about = None, name = "wind")]
+
+    /// Reverts a routine's Git repository to a previous commit.
+    #[clap(about = "Revert a routine's Git repository to a previous commit.", long_about = None, name = "wind")]
     Wind,
-}
-
-//Print info about a routine
-pub(crate) fn info(routine_path: &String) {
-    let mut relative_path = std::env::current_dir().unwrap();
-    let absolute_path = Path::new(&routine_path);
-    
-    if absolute_path.exists() && absolute_path.is_file() {
-	let routine_toml = library::routine::read_routine(routine_path).unwrap(); //routine is a &String already
-	library::routine::print_routine(&routine_toml);
-        return;
-    }
-
-    for directory in routine_path.split("/") {
-        if directory == "." { continue; }
-        if directory == ".." {
-            relative_path.pop();
-            continue;
-        }
-        relative_path.push(directory);
-    }
-
-    if relative_path.exists() && relative_path.is_file() {
-	let routine_toml = library::routine::read_routine(routine_path).unwrap(); //routine is a &String already
-	library::routine::print_routine(&routine_toml);
-        return;
-    }
-
-    println!("Routine not found");
-}
-//create the repo, commit changes, and stop there
-pub(crate) fn stage(routine_path: &String, message: &Option<String>) {
-    let routine_toml = library::routine::read_routine(routine_path).unwrap(); //stage_routine takes a &Routine, so we need to get that
-
-    if let Some(_m) = message {
-	library::routine::stage_routine(&routine_toml, message);
-    } else { 
-	library::routine::stage_routine(&routine_toml, &None);
-    }
-}
-
-pub(crate) fn throw() {
-    todo!()
-}
-
-pub(crate) fn catch() {
-    todo!();
-}
-
-pub(crate) fn wind() {
-    todo!();
 }
