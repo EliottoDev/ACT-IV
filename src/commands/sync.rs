@@ -1,6 +1,6 @@
-use crate::library::global_config;
+use crate::library::config;
+use crate::library::config::Library;
 
 pub(crate) fn sync() {
-    let r = global_config::write_library();
-    println!("{:?}", r);
+    let result = Library::new();
 }
