@@ -1,13 +1,78 @@
-# You can override the included template(s) by including variable overrides
-# SAST customization: https://docs.gitlab.com/ee/user/application_security/sast/#customizing-the-sast-settings
-# Secret Detection customization: https://docs.gitlab.com/ee/user/application_security/secret_detection/pipeline/#customization
-# Dependency Scanning customization: https://docs.gitlab.com/ee/user/application_security/dependency_scanning/#customizing-the-dependency-scanning-settings
-# Container Scanning customization: https://docs.gitlab.com/ee/user/application_security/container_scanning/#customizing-the-container-scanning-settings
-# Note that environment variables can be set in several places
-# See https://docs.gitlab.com/ee/ci/variables/#cicd-variable-precedence
 stages:
-- test
-sast:
+  - lint
+  - test
+  - security
+  - coverage
+  - build
+
+variables:
+  CARGO_HOME: "$CI_PROJECT_DIR/.cargo"
+  RUSTFLAGS: "-C target-cpu=native"
+  RUSTDOCFLAGS: "--no-defaults --document-private-items"
+  CARGO_TERM_COLOR: always
+
+cache:
+  key: "${CI_COMMIT_REF_SLUG}"
+  paths:
+    - .cargo
+    - target
+
+before_script:
+  - rustc --version
+  - cargo --version
+
+lint:
+  stage: lint
+  image: rust:latest
+  script:
+    - cargo fmt --all -- --check
+    - cargo clippy --all-targets --all-features -- -D warnings
+  allow_failure: false
+  tags:
+    - lint
+
+test:
   stage: test
-include:
-- template: Security/SAST.gitlab-ci.yml
+  image: rust:latest
+  script:
+    - cargo test --verbose
+  artifacts:
+    reports:
+      junit: target/test-reports/test-results.xml
+  tags:
+    - test
+
+security:
+  stage: security
+  image: rust:latest
+  script:
+    - cargo install cargo-audit || true
+    - cargo audit
+  allow_failure: false # Pipeline fails if there's a vulnerability
+  tags:
+    - security
+
+coverage:
+  stage: coverage
+  image: rust:latest
+  script:
+    - cargo install cargo-tarpaulin
+    - cargo tarpaulin --out Html
+  artifacts:
+    paths:
+      - target/debug/deps/coverage/
+    expire_in: 1 week
+  tags:
+    - coverage
+
+build:
+  stage: build
+  image: rust:latest
+  script:
+    - cargo build --release
+  artifacts:
+    paths:
+      - target/release/
+    expire_in: 1 week
+  tags:
+    - build
