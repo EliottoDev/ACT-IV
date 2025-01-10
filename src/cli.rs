@@ -29,6 +29,12 @@ pub(crate) enum Commands {
         message: Option<String>,
     },
 
+    /// Creates a new routine file under the name, "name", defaulting to current dir name
+    #[clap(about = "Init and register a new routine.", long_about = None, name = "init")]
+    Init {
+        name: Option<String>
+    },
+
     /// Sync the routine library and routine folder
     #[clap(about = "Sync the routine library with the routine folder", long_about = None, name = "sync")]
     Sync,

@@ -1,6 +1,7 @@
 use clap::Parser;
 use cli::{Args, Commands};
 use commands::{catch, info, stage, sync, throw, wind};
+use crate::commands::init;
 
 mod cli;
 mod commands;
@@ -19,5 +20,6 @@ fn main() {
         Commands::Throw {} => throw::throw(),
         Commands::Catch => catch::catch(),
         Commands::Wind => wind::wind(),
+        Commands::Init { name } => init::init(name),
     }
 }
