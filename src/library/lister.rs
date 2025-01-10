@@ -4,7 +4,7 @@ use rusqlite::{params, Connection};
 use crate::library::config::Configuration;
 
 pub(crate) struct Lister {
-    files: HashMap<String, PathBuf>,
+    connection: Connection,
 }
 
 const LISTER_FILE_NAME: &str = "lister.db";
@@ -18,38 +18,57 @@ impl Lister {
             r#"CREATE TABLE IF NOT EXISTS paths (
                       id INTEGER PRIMARY KEY,
                       key TEXT NOT NULL UNIQUE,
-                      path TEXT NOT NULL,
+                      path TEXT NOT NULL UNIQUE,
                    )"#,
             [],
         ).expect("Could not create library db.");
 
-        Self { files: HashMap::new() }
+        Self {
+            connection: conn,
+        }
     }
 
-    pub(crate) fn stop(&self) {
+    pub(crate) fn stop(self) {
+        self.connection.close().expect("Error while closing database.");
+    }
 
+    pub(crate) fn update(&self) {
+        let conn = &self.connection;
+
+        let mut statement =
+            self.connection
+                .prepare("SELECT key, path FROM paths")
+                .expect("Error preparing statement query to local database.");
+
+        let rows = statement
+            .query_map([], |row| {
+                Ok((
+                    row.get::<_, String>(0)?,
+                    PathBuf::from(row.get::<_, String>(1)?)
+                ))
+            })
+            .expect("Error while querying local database.");
+
+        for row in rows {
+            let (key, path) = row.expect("Error processing query to local database.");
+            if !path.exists() {
+                self.connection.execute(
+                    "DELETE FROM paths WHERE key = ?1",
+                    params![key])
+                    .expect(format!("Error while deleting path: {}", key).as_str());
+            }
+        }
     }
 
     /// Write to the routine library for ACT-IV
-    pub(crate) fn dump(&mut self) {
+    pub(crate) fn dump(&self) {
         let config_dir = match Configuration::get_dir() {
             Ok(path) => { path },
             Err(error) => { panic!("Error trying to get config dir: {}", error); }
         };
         let connection = Connection::open(config_dir.join(LISTER_FILE_NAME)).unwrap();
-        for (&key, path) in &self.files {
-            if !path.exists() {
-                self.files.remove_entry(&key);
-                continue;
-            }
-
-            connection.execute(
-                r#"INSERT INTO paths (key, path) VALUES (?1, ?2)"#,
-                params![key, path.to_str().unwrap()],
-            ).expect("Error during dumping to db.");
-        }
+        todo!("End implementation")
     }
-
 
     /// Read from the routine library for ACT-IV
     pub(crate) fn read() {
