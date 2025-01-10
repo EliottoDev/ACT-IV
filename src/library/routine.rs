@@ -1,11 +1,12 @@
 use std::{env::var, fs};
 use std::{io::Error, path::{Path, PathBuf}};
+use clap::error;
 use serde::{Deserialize, Serialize};
 use tabled::{
     Table, Tabled,
     settings::*
 };
-use git2::{Repository, IndexAddOption};
+use git2::{Commit, IndexAddOption, Repository, Signature, Tree};
 use walkdir::WalkDir;
 use chrono::Local;
 use toml;
@@ -190,6 +191,19 @@ fn walk_directory(path: &str) -> Vec<PathBuf> { //this is used in stage_routine
     paths
 }
 
+fn init_repo(repo: &Repository, publisher: &Signature, tree: &Tree<'_>) {
+    let oid = repo.commit(
+	Some("HEAD"),
+	publisher,
+	publisher,
+	"ACT-IV Init",
+	&tree,
+	&[],
+    ).expect("Failed to initalize repository");
+
+    println!("initialized repo: {}", oid);
+}
+
 pub fn stage_routine(routine: &Routine, message: &Option<String>) {
     let msg:String;
 
@@ -227,6 +241,33 @@ pub fn stage_routine(routine: &Routine, message: &Option<String>) {
         eprintln!("Failed to write to index: {}", e);
     }
 
-    todo!("Implement commits in stage_routine()")
-    // new_repo.commit(update_ref, author, committer, message, tree, parents)
+    /* todo!("Implement committing automatically on a new repository"); */
+    //COMPLETE it now can initialize the repository and make an initial commit if it needs to*
+    //*git2 can fail to create a commit if one hasn't already been made
+
+    let committer = Signature::now("test", "test@example.com").expect("Failed to create signature");
+    let tree_oid = repo_index.write_tree().expect("Failed to write index as tree");
+    let tree = new_repo.find_tree(tree_oid).expect("Failed to find tree");
+
+    let mut head = new_repo.head();
+    let mut head_real;
+
+    //If we don't do it this way rustc gets mad that the value of head can be uninitialized
+    if let Err(err) = &head {
+	init_repo(&new_repo, &committer, &tree);
+	head_real = new_repo.head().unwrap();
+    } else { head_real = head.unwrap() }
+
+    let parent_commit = head_real.peel_to_commit().expect("Expected to peel to commit");
+
+    let commit_oid = new_repo.commit(
+	Some("HEAD"),
+	&committer,
+	&committer,
+	&msg,
+	&tree,
+	&[&parent_commit],
+    ).expect("Failed to create commit");
+
+    println!("New commit created: {}", commit_oid);
 }
