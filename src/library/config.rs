@@ -4,16 +4,12 @@ use std::fs::OpenOptions;
 use rusqlite::{params, Connection};
 
 const CONFIG_FILE_NAME: &str = "config.toml";
-const LIBRARY_FILE_NAME: &str = "library.db";
 
 pub(crate) struct Configuration;
-pub(crate) struct Library {
-    files: HashMap<String, PathBuf>,
-}
 
 impl Configuration {
     /// Find the config directory
-    fn get_dir() -> Result<PathBuf, Box<dyn error::Error>> {
+    pub(crate) fn get_dir() -> Result<PathBuf, Box<dyn error::Error>> {
         let home_dir = home::home_dir().ok_or("Could not find home directory.")?;
 
         let config_dir =
@@ -55,53 +51,5 @@ impl Configuration {
 
         let config: HashMap<String, String> = toml::from_str(&content)?;
         Ok(config)
-    }
-}
-impl Library {
-
-    pub(crate) fn new() -> Self {
-        let config_dir = Configuration::get_dir().unwrap();
-        let conn = Connection::open(config_dir.join(LIBRARY_FILE_NAME)).unwrap();
-
-        conn.execute(
-            r#"CREATE TABLE IF NOT EXISTS paths (
-                      id INTEGER PRIMARY KEY,
-                      key TEXT NOT NULL UNIQUE,
-                      path TEXT NOT NULL,
-                   )"#,
-            [],
-        ).expect("Could not create library db.");
-
-        Self { files: HashMap::new() }
-    }
-
-    pub(crate) fn stop(&self) {
-
-    }
-
-    /// Write to the routine library for ACT-IV
-    pub(crate) fn dump(&mut self) {
-        let config_dir = match Configuration::get_dir() {
-            Ok(path) => { path },
-            Err(error) => { panic!("Error trying to get config dir: {}", error); }
-        };
-        let connection = Connection::open(config_dir.join(LIBRARY_FILE_NAME)).unwrap();
-        for (&key, path) in &self.files {
-            if !path.exists() {
-                self.files.remove_entry(&key);
-                continue;
-            }
-
-            connection.execute(
-                r#"INSERT INTO paths (key, path) VALUES (?1, ?2)"#,
-                params![key, path.to_str().unwrap()],
-            ).expect("Error during dumping to db.");
-        }
-    }
-
-
-    /// Read from the routine library for ACT-IV
-    pub(crate) fn read() {
-
     }
 }
