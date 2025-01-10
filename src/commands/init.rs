@@ -1,4 +1,4 @@
 
-pub(crate) fn init(name: Option<String>) {
+pub(crate) fn init(name: &Option<String>) {
     todo!()
 }
