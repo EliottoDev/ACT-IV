@@ -20,6 +20,7 @@ walkdir = "2.5.0"
 tempfile = "3.15.0"
 home = "0.5.11"
 serde_yaml = "0.9.34"
+dunce = "1.0.5"
 
 [[bin]]
 name = "act"
