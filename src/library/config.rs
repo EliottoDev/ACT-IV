@@ -1,9 +1,8 @@
 use std::{path::PathBuf, env, fs, io, error};
 use std::collections::HashMap;
 use std::fs::OpenOptions;
-use rusqlite::{params, Connection};
 
-const CONFIG_FILE_NAME: &str = "config.toml";
+pub(crate) const CONFIG_FILE_NAME: &str = "config.toml";
 
 pub(crate) struct Configuration;
 
