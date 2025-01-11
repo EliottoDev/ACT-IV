@@ -1,5 +1,6 @@
 #[cfg(test)]
 mod cli_tests {
+    use std::path::PathBuf;
     // Importing the code under test
     use crate::cli::{Args, Commands};
     use clap::Parser;
@@ -12,7 +13,7 @@ mod cli_tests {
 
         // Assert the correct command is parsed
         if let Commands::Info { routine } = parsed.command {
-            assert_eq!(routine, "routine_path");
+            assert_eq!(routine, PathBuf::from("routine_path"));
         } else {
             panic!("Expected `info` command");
         }
@@ -26,7 +27,7 @@ mod cli_tests {
 
         // Assert the correct command is parsed and message is set
         if let Commands::Stage { routine, message } = parsed.command {
-            assert_eq!(routine, "routine_path");
+            assert_eq!(routine, PathBuf::from("routine_path"));
             assert_eq!(message.unwrap(), "Test commit");
         } else {
             panic!("Expected `stage` command");
@@ -41,7 +42,7 @@ mod cli_tests {
 
         // Assert the correct command is parsed and the message is None
         if let Commands::Stage { routine, message } = parsed.command {
-            assert_eq!(routine, "routine_path");
+            assert_eq!(routine, PathBuf::from("routine_path"));
             assert!(message.is_none());
         } else {
             panic!("Expected `stage` command");
