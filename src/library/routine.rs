@@ -103,9 +103,9 @@ fn init_repo(repo: &Repository, publisher: &Signature, tree: &Tree<'_>) -> Resul
 
 impl Routine {
     /// Reads the routine configuration from a TOML file
-    pub fn read(file_name: &str) -> Result<Self, Error> {
+    pub fn read(file_path: &PathBuf) -> Result<Self, Error> {
         // Read the file content as a string
-        let routine_str = fs::read_to_string(file_name)?;
+        let routine_str = fs::read_to_string(&file_path)?;
 
         // Parse the TOML string into the `Routine` struct
         let routine: Routine = toml::from_str(&routine_str).unwrap();

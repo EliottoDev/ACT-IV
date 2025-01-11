@@ -1,8 +1,8 @@
 use crate::library::routine::Routine;
-use std::path::Path;
+use std::path::{Path, PathBuf};
 
-pub(crate) fn info(routine_path: &String) {
-    if !Path::new(routine_path).exists() {
+pub(crate) fn info(routine_path: &PathBuf) {
+    if !routine_path.exists() {
         println!("Routine not found");
         return;
     }

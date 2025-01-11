@@ -1,3 +1,4 @@
+use std::path::PathBuf;
 use clap::{Parser, Subcommand};
 
 /// Represents the command-line arguments structure.
@@ -16,14 +17,14 @@ pub(crate) enum Commands {
     #[clap(about = "Display information about a routine.", long_about = None, name = "info")]
     Info {
         /// The path to the routine to retrieve information from.
-        routine: String,
+        routine: PathBuf,
     },
 
     /// Prepares a routine's Git repository for further actions (e.g., pushing).
     #[clap(about = "Prepare a routine's Git repository for subsequent actions.", long_about = None, name = "stage")]
     Stage {
         /// Path to the routine repository to be staged.
-        routine: String,
+        routine: PathBuf,
 
         /// Optional commit message; if none is provided, current timestamp is used.
         message: Option<String>,
