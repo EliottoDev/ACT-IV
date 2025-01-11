@@ -15,7 +15,13 @@ pub struct Routine {
     pub press: Compress,
     pub advanced: Advanced,
     pub ntfy: Ntfy,
-    pub git: Git,
+    pub git: Git
+}
+
+#[derive(Tabled, Debug)] // This struct will be used for displaying the data in a table
+struct Data<'a> {
+    name: &'a str,
+    value: String,
 }
 
 #[derive(Debug, Deserialize, Serialize)]
@@ -106,6 +112,46 @@ impl Routine {
         Ok(routine)
     }
 
+    pub fn get_data(&self) -> Vec<Data> {
+        // Collect all the configuration data into a vector of Data structs
+        vec![
+            Data { name: "Title", value: self.base.title.clone() },
+            Data { name: "Path", value: self.base.path.clone() },
+            Data { name: "Interval Timestamp", value: self.base.interval.timestamp.to_string() },
+            Data { name: "Commit Interval", value: self.base.interval.commit_interval.clone() },
+            Data { name: "Sync Method", value: self.base.interval.sync_method.clone() },
+            Data { name: "Time Zone", value: self.base.interval.time_zone.clone() },
+            Data {
+                name: "Last Sync Time",
+                value: self.base.interval.last_sync_time.clone().unwrap_or("None".to_string()),
+            },
+            Data { name: "Encrypt", value: self.crypt.encrypt.to_string() },
+            Data {
+                name: "Password",
+                value: self.crypt.password.clone().unwrap_or("None".to_string()),
+            },
+            Data {
+                name: "Password Eval",
+                value: self.crypt.password_eval.clone().unwrap_or("None".to_string()),
+            },
+            Data { name: "Compression", value: self.press.compression.clone() },
+            Data { name: "Exclude", value: format!("{:?}", self.advanced.exclude) },
+            Data { name: "Sync On Startup", value: self.advanced.sync_on_startup.to_string() },
+            Data { name: "Notify Topic", value: self.ntfy.ntfy_topic.clone() },
+            Data {
+                name: "Notification on Success",
+                value: self.ntfy.notification_on_success.to_string(),
+            },
+            Data {
+                name: "Notification on Failure",
+                value: self.ntfy.notification_on_failure.to_string(),
+            },
+            Data { name: "Git Remote", value: self.git.remote.clone() },
+            Data { name: "Git Branch", value: self.git.branch.clone() },
+            Data { name: "Force Push", value: self.git.force_push.to_string() },
+        ]
+    }
+
     /// Stages the changes, commits them, and handles the Git repository
     pub fn stage(&self, message: &Option<String>) -> Result<(), Box<dyn std::error::Error>> {
         // Determine the commit message, use current timestamp if not provided
@@ -175,49 +221,8 @@ impl Routine {
 
     /// Prints the routine configuration as a table
     pub fn print(&self) {
-        #[derive(Tabled)] // This struct will be used for displaying the data in a table
-        struct Data<'a> {
-            name: &'a str,
-            value: String,
-        }
 
-        // Collect all the configuration data into a vector of Data structs
-        let data = vec![
-            Data { name: "Title", value: self.base.title.clone() },
-            Data { name: "Path", value: self.base.path.clone() },
-            Data { name: "Interval Timestamp", value: self.base.interval.timestamp.to_string() },
-            Data { name: "Commit Interval", value: self.base.interval.commit_interval.clone() },
-            Data { name: "Sync Method", value: self.base.interval.sync_method.clone() },
-            Data { name: "Time Zone", value: self.base.interval.time_zone.clone() },
-            Data {
-                name: "Last Sync Time",
-                value: self.base.interval.last_sync_time.clone().unwrap_or("None".to_string()),
-            },
-            Data { name: "Encrypt", value: self.crypt.encrypt.to_string() },
-            Data {
-                name: "Password",
-                value: self.crypt.password.clone().unwrap_or("None".to_string()),
-            },
-            Data {
-                name: "Password Eval",
-                value: self.crypt.password_eval.clone().unwrap_or("None".to_string()),
-            },
-            Data { name: "Compression", value: self.press.compression.clone() },
-            Data { name: "Exclude", value: format!("{:?}", self.advanced.exclude) },
-            Data { name: "Sync On Startup", value: self.advanced.sync_on_startup.to_string() },
-            Data { name: "Notify Topic", value: self.ntfy.ntfy_topic.clone() },
-            Data {
-                name: "Notification on Success",
-                value: self.ntfy.notification_on_success.to_string(),
-            },
-            Data {
-                name: "Notification on Failure",
-                value: self.ntfy.notification_on_failure.to_string(),
-            },
-            Data { name: "Git Remote", value: self.git.remote.clone() },
-            Data { name: "Git Branch", value: self.git.branch.clone() },
-            Data { name: "Force Push", value: self.git.force_push.to_string() },
-        ];
+        let data = self.get_data();
 
         // Configure the table styling and display it
 	/*TODO Option to disable the pretty table printing*/

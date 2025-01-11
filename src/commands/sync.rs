@@ -1,6 +1,6 @@
 use crate::library::config;
-use crate::library::config::Library;
+use crate::library::lister::Lister;
 
 pub(crate) fn sync() {
-    let result = Library::new();
+    let result = Lister::new();
 }

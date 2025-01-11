@@ -6,7 +6,7 @@ use crate::commands::init;
 mod cli;
 mod commands;
 mod library;
-mod test;
+mod tests;
 
 fn main() {
     // Parse command-line arguments
