@@ -1,0 +1,9 @@
+/target/
+/cargo-config.toml
+*.rs.bk
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*.swo
